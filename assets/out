@@ -1,2 +1,4 @@
 #!/bin/bash
 set -euf -o pipefail
+source $(dirname $0)/common.sh
+payload=`cat`
