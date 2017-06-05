@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euf -o pipefail
+source $(dirname $0)/common.sh
+
+payload=`cat`
+
+# Allow `fly check-resource -f ref:force` to ignore source.paths
+if [ $(jq -r '.version.ref' <<< ${payload}) = "force" ]; then
+  payload=$(jq 'del(.version)|del(.source.paths)' <<< ${payload})
+fi
+
+result=`/opt/resource/git/check <<< "${payload}"`
+echo "${result}" >&3

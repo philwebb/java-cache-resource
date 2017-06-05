@@ -1,0 +1,39 @@
+= Contributing to java-cache-resource
+This project is released under the Apache 2.0 license.
+If you would like to contribute something, or simply want to hack on the code this document should help you get started.
+
+== Working with the code
+In order to build the project you will need a locally installed copy of http://docker.com[Docker].
+
+The code is organized as follows:
+
+* `assets` - The actual concourse `check`/`in`/`out` scripts
+* `ci` - The project CI files
+* `scripts` - Build and user scripts
+* `test` - Tests
+
+=== Building from source
+To build the docker image run the following command from the root checkout:
+
+----
+$ docker build -t springio/java-cache-resource .
+----
+
+=== Developing locally
+If you want to add functionality you can start the docker image and run `test/all.sh`.
+There's a helpful script to get you started:
+
+----
+$ cd scripts
+$ ./develop.sh
+----
+
+This will build and launch the docker image with files mounted at `/java-cache-resource`.
+You can run tests inside the launched image using:
+
+----
+$ cd test
+$ ./all.sh
+----
+
+Since a docker volume is used, you can continue to edit files outside of docker.
