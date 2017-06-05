@@ -1,3 +1,55 @@
 #!/bin/bash
 set -euf -o pipefail
 source $(dirname $0)/common.sh
+
+payload=`cat`
+
+destination=$1
+if [ -z "${destination}" ]; then
+  echo "usage: $0 <path/to/destination>" >&2
+  exit 1
+fi
+
+# Extract elements we need from the payload JSON
+folderSources=( $(jq -e -r '.source.folders[].source' <<< ${payload}) ) ||
+  (echo "Invalid payload (missing folder sources):" >&2 | echo "${payload}" >&2 | exit 1)
+folderDestinations=( $(jq -e -r '.source.folders[].destination' <<< ${payload}) ) ||
+  (echo "Invalid payload (missing folder destinations):" >&2 | echo "${payload}" >&2 | exit 1)
+commands=( "$(jq -r '.source.commands[]' <<< ${payload})" ) ||
+  (echo "Invalid payload (missing commands):" >&2 | echo "${payload}" >&2 | exit 1)
+
+# FIXME check folderSources and folderDestinations have same length
+
+echo "Delegating to git-resource /in" >&2
+gitDestination="$(mktemp -d -t git-resource-destination.XXXXXX)"
+gitResourceResult=`/opt/resource/git/in "${gitDestination}" <<< "${payload}"`
+
+# Create symlinks to the source folders
+for i in "${!folderSources[@]}"; do
+  sourceFolder="${folderSources[i]}"
+  destinationFolder="${destination}/${folderDestinations[i]}"
+  echo "Linking ${sourceFolder} to ${destinationFolder}" >&2
+  if [ -d "${sourceFolder}" ]; then
+    rm -fr "${sourceFolder}"
+  fi
+  mkdir -p $(dirname "${sourceFolder}")
+  mkdir -p "${destinationFolder}"
+  ln -s "${destinationFolder}" "${sourceFolder}"
+done
+
+# Run the commands
+log=$(mktemp ${TMPDIR}/maven-cache-resource-request-log.XXXXXX)
+for command in "${commands}"; do
+  cd "${gitDestination}"
+  echo "Running ${command}" >&2
+  result=0
+  (eval "${command}" 2>&1 > "${log}") || result=$?
+  if [ $result -ne 0 ]; then
+    tail -n 400 "${log}" >&2
+    echo "\n${command} failed with exit code ${result}"  >&2
+    exit 1
+  fi
+done
+
+# Return the original git result
+echo "${gitResourceResult}" >&3

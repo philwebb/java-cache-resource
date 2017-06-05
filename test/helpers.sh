@@ -2,7 +2,7 @@
 set -e -u
 set -o pipefail
 
-export TMPDIR_ROOT=$(mktemp -d /tmp/git-tests.XXXXXX)
+export TMPDIR_ROOT=$(mktemp -d /tmp/java-cache-resource-tests.XXXXXX)
 trap "rm -rf $TMPDIR_ROOT" EXIT
 
 if [ -d /java-cache-resource/assets ]; then
@@ -16,7 +16,7 @@ fi
 test_dir=$(cd $(dirname $0) && pwd)
 
 run() {
-  export TMPDIR=$(mktemp -d ${TMPDIR_ROOT}/git-tests.XXXXXX)
+  export TMPDIR=$(mktemp -d ${TMPDIR_ROOT}/run.XXXXXX)
 
   echo -e 'running \e[33m'"$@"$'\e[0m...'
   eval "$@" 2>&1 | sed -e 's/^/  /g'
@@ -74,49 +74,4 @@ make_commit_to_file_on_branch() {
     commit -q -m "commit $(wc -l $repo/$file) $msg"
   # output resulting sha
   git -C $repo rev-parse HEAD
-}
-
-check_uri() {
-  jq -n "{
-    source: {
-      uri: $(echo $1 | jq -R .)
-    }
-  }" | ${resource_dir}/check | tee /dev/stderr
-}
-
-check_uri_paths() {
-  local uri=$1
-  shift
-  jq -n "{
-    source: {
-      uri: $(echo $uri | jq -R .),
-      paths: $(echo "$@" | jq -R '. | split(" ")')
-    }
-  }" | ${resource_dir}/check | tee /dev/stderr
-}
-
-check_uri_paths_with_force_version() {
-  local uri=$1
-  shift
-  jq -n "{
-    source: {
-      uri: $(echo $uri | jq -R .),
-      paths: $(echo "$@" | jq -R '. | split(" ")')
-    },
-    version: {
-      ref: \"force\"
-    }
-  }" | ${resource_dir}/check | tee /dev/stderr
-}
-
-put_uri() {
-  jq -n "{
-    source: {
-      uri: $(echo $1 | jq -R .),
-      branch: \"master\"
-    },
-    params: {
-      repository: $(echo $3 | jq -R .)
-    }
-  }" | ${resource_dir}/out "$2" || echo "exit with $?"
 }

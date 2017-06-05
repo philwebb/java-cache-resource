@@ -3,6 +3,8 @@ set -e
 
 source $(dirname $0)/helpers.sh
 
+# tests
+
 it_can_check_from_head() {
   local repo=$(init_repo)
   local ref=$(make_commit $repo)
@@ -32,6 +34,43 @@ it_ignores_given_glob_paths_when_force_version() { # issue gh-120
     . == [{ref: $(echo $ref3 | jq -R .)}]
   "
 }
+
+# helpers
+
+check_uri() {
+  jq -n "{
+    source: {
+      uri: $(echo $1 | jq -R .)
+    }
+  }" | ${resource_dir}/check | tee /dev/stderr
+}
+
+check_uri_paths() {
+  local uri=$1
+  shift
+  jq -n "{
+    source: {
+      uri: $(echo $uri | jq -R .),
+      paths: $(echo "$@" | jq -R '. | split(" ")')
+    }
+  }" | ${resource_dir}/check | tee /dev/stderr
+}
+
+check_uri_paths_with_force_version() {
+  local uri=$1
+  shift
+  jq -n "{
+    source: {
+      uri: $(echo $uri | jq -R .),
+      paths: $(echo "$@" | jq -R '. | split(" ")')
+    },
+    version: {
+      ref: \"force\"
+    }
+  }" | ${resource_dir}/check | tee /dev/stderr
+}
+
+# test suite
 
 run it_can_check_from_head
 run it_checks_given_glob_paths

@@ -9,5 +9,5 @@ if [ $(jq -r '.version.ref' <<< ${payload}) = "force" ]; then
   payload=$(jq 'del(.version)|del(.source.paths)' <<< ${payload})
 fi
 
-result=`/opt/resource/git/check <<< "${payload}"`
-echo "${result}" >&3
+gitResourceResult=`/opt/resource/git/check <<< "${payload}"`
+echo "${gitResourceResult}" >&3
