@@ -54,7 +54,6 @@ it_needs_destination_folder_to_run() {
   fi
 }
 
-
 it_needs_commands_to_run() {
   local dest=$TMPDIR/destination
   result=0
