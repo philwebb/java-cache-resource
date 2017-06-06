@@ -26,8 +26,8 @@ gitResourceResult=`/opt/resource/git/in "${gitDestination}" <<< "${payload}"`
 
 # Create symlinks to the source folders
 for i in "${!folderSources[@]}"; do
-  eval sourceFolder="${folderSources[i]}"
-  destinationFolder="${destination}/${folderDestinations[i]}"
+  sourceFolder="${folderSources[i]/#\~/$HOME}"
+  destinationFolder="${destination}/${folderDestinations[i]/#\~/$HOME}"
   echo "Linking ${sourceFolder} to ${destinationFolder}" >&2
   if [ -d "${sourceFolder}" ]; then
     rm -fr "${sourceFolder}"
