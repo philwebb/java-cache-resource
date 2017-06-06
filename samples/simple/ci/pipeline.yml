@@ -23,5 +23,5 @@ jobs:
       - get: java-cache
       - get: git-repo
         trigger: true
-      - task: run-build
-        file: git-repo/samples/tasks/run-build.yml
+      - task: build
+        file: git-repo/samples/simple/tasks/build.yml
