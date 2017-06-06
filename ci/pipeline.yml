@@ -1,0 +1,12 @@
+resources:
+  - name: git-repo
+    type: git
+    source:
+      uri: https://github.com/philwebb/java-cache-resource.git
+jobs:
+  - name: test
+    plan:
+      - get: git-repo
+        trigger: true
+      - task: test
+        file: git-repo/samples/simple/ci/tasks/test.yml
