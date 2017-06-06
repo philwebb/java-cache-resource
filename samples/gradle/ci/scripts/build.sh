@@ -2,4 +2,4 @@
 set -e
 ln -fs $(pwd)/java-cache/gradle ~/.gradle
 cd git-repo/samples/gradle
-./gradlew --offline build
+./gradlew --project-cache-dir ~/.gradle/project --offline build

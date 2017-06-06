@@ -18,7 +18,7 @@ resources:
         - source: ~/.gradle
           destination: gradle
       commands:
-        - "(cd ./samples/gradle && ./gradlew build)"
+        - "(cd ./samples/gradle && ./gradlew --project-cache-dir ~/.gradle/project build)"
       cleanup:
         - ".*SNAPSHOT"
 jobs:
