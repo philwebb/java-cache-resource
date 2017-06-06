@@ -54,6 +54,31 @@ it_needs_destination_folder_to_run() {
   fi
 }
 
+it_needs_each_folder_to_have_source_and_destination() {
+  local dest=$TMPDIR/destination
+  result=0
+  jq -n "{
+    source: {
+      folders: [
+        {
+          source: \"foo\",
+          destination: \"bar\"
+        },
+        {
+          source: \"baz\"
+        },
+        {
+          destination: \"bing\"
+        }
+      ]
+    }
+  }" | ${resource_dir}/in $dest | tee /dev/stderr || result=$?
+  if [ $result -eq 0 ]; then
+    echo "in script accepted source/destination folder mismatch"
+    exit 1;
+  fi
+}
+
 it_needs_commands_to_run() {
   local dest=$TMPDIR/destination
   result=0
@@ -96,7 +121,32 @@ it_runs_the_commands() {
   test "$(git -C $repo rev-parse HEAD)" = $ref
   if [ ! -f $TMPDIR/destination/destcache/file ]; then
     echo "$TMPDIR/destination/destcache/file does not exist"
-    exit;
+    exit 1;
+  fi
+}
+
+it_cleans_up_specified_patterns() {
+  local repo=$(init_repo)
+  mkdir -p $repo/a/b
+  local dest=$TMPDIR/destination
+  local sourcecache=$TMPDIR/source/cache
+  result=0
+  jq -n "{
+    source: {
+      uri: \"${repo}\",
+      folders: [
+        {
+          \"source\" : \"${sourcecache}\",
+          \"destination\" : \"destcache\"
+        }
+      ],
+      commands: [\"touch ${sourcecache}/file\", \"touch ${sourcecache}/file-SNAPSHOT\"],
+      cleanup: [\"SNAPSHOT\"]
+    }
+  }" | ${resource_dir}/in ${dest} | tee /dev/stderr
+  if [ -f $TMPDIR/destination/destcache/file-SNAPSHOT ]; then
+    echo "$TMPDIR/destination/destcache/file-SNAPSHOT not deleted"
+    exit 1;
   fi
 }
 
@@ -107,5 +157,7 @@ it_runs_the_commands() {
 run it_needs_folders_to_run
 run it_needs_source_folder_to_run
 run it_needs_destination_folder_to_run
+run it_needs_each_folder_to_have_source_and_destination
 run it_needs_commands_to_run
 run it_runs_the_commands
+run it_cleans_up_specified_patterns

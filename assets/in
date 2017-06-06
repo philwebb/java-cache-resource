@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euf -o pipefail
+set -x
 source $(dirname $0)/common.sh
 
 payload=`cat`
@@ -17,8 +18,7 @@ folderDestinations=( $(jq -e -r '.source.folders[].destination' <<< ${payload}) 
   (echo "Invalid payload (missing folder destinations):" >&2 | echo "${payload}" >&2 | exit 1)
 commands=( "$(jq -r '.source.commands[]' <<< ${payload})" ) ||
   (echo "Invalid payload (missing commands):" >&2 | echo "${payload}" >&2 | exit 1)
-
-# FIXME check folderSources and folderDestinations have same length
+cleanups=( "$(jq -r '(.source.cleanup // [""])[]' <<< ${payload})" )
 
 echo "Delegating to git-resource /in" >&2
 gitDestination="$(mktemp -d -t git-resource-destination.XXXXXX)"
@@ -50,6 +50,15 @@ for command in "${commands}"; do
     exit 1
   fi
 done
+
+# Cleanup files
+if [ -n "${cleanups-}" ]; then
+  for cleanup in "${cleanups-}"; do
+    cd "${destination}"
+    echo "Cleaning up '${cleanup}'" >&2
+    find . -print0 | grep -z "${cleanup}" | xargs -0 rm -fr
+  done
+fi
 
 # Return the original git result
 echo "${gitResourceResult}" >&3
