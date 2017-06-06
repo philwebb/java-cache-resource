@@ -94,7 +94,6 @@ it_runs_the_commands() {
   }" | ${resource_dir}/in ${dest} | tee /dev/stderr | jq -e "
       .version == {ref: $(echo $ref | jq -R .)}"
   test "$(git -C $repo rev-parse HEAD)" = $ref
-  ls -la $sourcecache
   if [ ! -f $TMPDIR/destination/destcache/file ]; then
     echo "$TMPDIR/destination/destcache/file does not exist"
     exit;
