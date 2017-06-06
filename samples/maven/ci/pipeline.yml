@@ -11,12 +11,14 @@ resources:
     type: java-cache-resource
     source:
       <<: *repo-source
+      paths:
+        - "**pom.xml"
       depth: 1
       folders:
-        - source: ~/.javabuild
-          destination: javabuild
+        - source: ~/.m2
+          destination: m2
       commands:
-        - "echo 'foo' > ~/.javabuild/test"
+        - "./samples/maven/mvnw -f ./samples/maven.pom.xml dependency:go-offline"
 jobs:
   - name: build
     plan:
@@ -24,4 +26,4 @@ jobs:
       - get: git-repo
         trigger: true
       - task: build
-        file: git-repo/samples/simple/ci/tasks/build.yml
+        file: git-repo/samples/maven/ci/tasks/build.yml

@@ -9,4 +9,4 @@ inputs:
 - name: git-repo
 - name: java-cache
 run:
-  path: git-repo/samples/simple/ci/scripts/build.sh
+  path: git-repo/samples/maven/ci/scripts/build.sh
