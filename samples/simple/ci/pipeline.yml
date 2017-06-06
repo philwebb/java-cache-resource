@@ -18,7 +18,7 @@ resources:
       commands:
         - "echo 'foo' > ~/.javabuild/test"
 jobs:
-  - name: build
+  - name: simple-build
     plan:
       - get: java-cache
       - get: git-repo

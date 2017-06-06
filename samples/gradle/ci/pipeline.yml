@@ -22,7 +22,7 @@ resources:
       cleanup:
         - ".*SNAPSHOT"
 jobs:
-  - name: build
+  - name: gradle-build
     plan:
       - get: java-cache
       - get: git-repo
