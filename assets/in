@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euf -o pipefail
-set -x
 source $(dirname $0)/common.sh
 
 payload=`cat`
@@ -56,7 +55,9 @@ if [ -n "${cleanups-}" ]; then
   for cleanup in "${cleanups-}"; do
     cd "${destination}"
     echo "Cleaning up '${cleanup}'" >&2
+    set +e
     find . -print0 | grep -z "${cleanup}" | xargs -0 rm -fr
+    set -e
   done
 fi
 

@@ -141,11 +141,61 @@ it_cleans_up_specified_patterns() {
         }
       ],
       commands: [\"touch ${sourcecache}/file\", \"touch ${sourcecache}/file-SNAPSHOT\"],
-      cleanup: [\"SNAPSHOT\"]
+      cleanup: [\".*SNAPSHOT\"]
     }
   }" | ${resource_dir}/in ${dest} | tee /dev/stderr
   if [ -f $TMPDIR/destination/destcache/file-SNAPSHOT ]; then
     echo "$TMPDIR/destination/destcache/file-SNAPSHOT not deleted"
+    exit 1;
+  fi
+}
+
+it_does_nothing_if_pattern_not_found() {
+  local repo=$(init_repo)
+  mkdir -p $repo/a/b
+  local dest=$TMPDIR/destination
+  local sourcecache=$TMPDIR/source/cache
+  result=0
+  jq -n "{
+    source: {
+      uri: \"${repo}\",
+      folders: [
+        {
+          \"source\" : \"${sourcecache}\",
+          \"destination\" : \"destcache\"
+        }
+      ],
+      commands: [\"touch ${sourcecache}/file-SNAPSHOT\"],
+      cleanup: [\".*WRONGPATTERN\"]
+    }
+  }" | ${resource_dir}/in ${dest} | tee /dev/stderr
+  if [ ! -f $TMPDIR/destination/destcache/file-SNAPSHOT ]; then
+    echo "$TMPDIR/destination/destcache/file-SNAPSHOT accidentally deleted"
+    exit 1;
+  fi
+}
+
+it_cleans_up_specified_directory() {
+  local repo=$(init_repo)
+  mkdir -p $repo/a/b
+  local dest=$TMPDIR/destination
+  local sourcecache=$TMPDIR/source/cache
+  result=0
+  jq -n "{
+    source: {
+      uri: \"${repo}\",
+      folders: [
+        {
+          \"source\" : \"${sourcecache}\",
+          \"destination\" : \"destcache\"
+        }
+      ],
+      commands: [\"mkdir ${sourcecache}/foo\", \"touch ${sourcecache}/foo/file-SNAPSHOT\"],
+      cleanup: [\"foo\"]
+    }
+  }" | ${resource_dir}/in ${dest} | tee /dev/stderr
+  if [ -d $TMPDIR/destination/destcache/foo ]; then
+    echo "$TMPDIR/destination/destcache/foo not deleted"
     exit 1;
   fi
 }
@@ -161,3 +211,5 @@ run it_needs_each_folder_to_have_source_and_destination
 run it_needs_commands_to_run
 run it_runs_the_commands
 run it_cleans_up_specified_patterns
+run it_does_nothing_if_pattern_not_found
+run it_cleans_up_specified_directory
