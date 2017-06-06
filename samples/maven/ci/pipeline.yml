@@ -18,7 +18,9 @@ resources:
         - source: ~/.m2
           destination: m2
       commands:
-        - "(cd ./samples/maven && ./mvnw dependency:go-offline)"
+        - "(cd ./samples/maven && ./mvnw -DskipTests package dependency:go-offline)"
+      cleanup:
+        - ".*SNAPSHOT"
 jobs:
   - name: build
     plan:
