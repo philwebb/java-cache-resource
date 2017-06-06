@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
 
-echo java-cache/javabuild/test
+cat java-cache/javabuild/test
