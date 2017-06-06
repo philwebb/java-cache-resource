@@ -1,0 +1,31 @@
+resource_types:
+  - name: java-cache-resource
+    type: docker-image
+    source: {repository: springio/java-cache-resource, tag: latest}
+resources:
+  - name: git-repo
+    type: git
+    source: &repo-source
+      uri: https://github.com/philwebb/java-cache-resource.git
+  - name: java-cache
+    type: java-cache-resource
+    source:
+      <<: *repo-source
+      paths:
+        - "**pom.xml"
+      depth: 1
+      folders:
+        - source: ~/.m2
+          destination: m2
+      commands:
+        - "(cd ./samples/maven && ./mvnw -DskipTests package dependency:go-offline)"
+      cleanup:
+        - ".*SNAPSHOT"
+jobs:
+  - name: build
+    plan:
+      - get: java-cache
+      - get: git-repo
+        trigger: true
+      - task: build
+        file: git-repo/samples/maven/ci/tasks/build.yml
