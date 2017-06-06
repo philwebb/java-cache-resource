@@ -12,13 +12,13 @@ resources:
     source:
       <<: *repo-source
       paths:
-        - "**pom.xml"
+        - "**build.gradle"
       depth: 1
       folders:
-        - source: ~/.m2
-          destination: m2
+        - source: ~/.gradle
+          destination: gradle
       commands:
-        - "(cd ./samples/maven && ./mvnw -DskipTests package dependency:go-offline)"
+        - "(cd ./samples/gradle && ./gradlew build)"
       cleanup:
         - ".*SNAPSHOT"
 jobs:
@@ -28,4 +28,4 @@ jobs:
       - get: git-repo
         trigger: true
       - task: build
-        file: git-repo/samples/maven/ci/tasks/build.yml
+        file: git-repo/samples/gradle/ci/tasks/build.yml
