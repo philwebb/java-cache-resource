@@ -1,3 +1,4 @@
 #!/bin/sh
 set -e
-./samples/maven/mvnw -f ./samples/maven.pom.xml -o clean package
+(cd ./samples/maven && ./mvnw -o clean package)
+ 

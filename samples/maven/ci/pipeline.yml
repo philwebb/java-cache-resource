@@ -18,7 +18,7 @@ resources:
         - source: ~/.m2
           destination: m2
       commands:
-        - "./samples/maven/mvnw -f ./samples/maven.pom.xml dependency:go-offline"
+        - "(cd ./samples/maven && ./mvnw dependency:go-offline)"
 jobs:
   - name: build
     plan:
