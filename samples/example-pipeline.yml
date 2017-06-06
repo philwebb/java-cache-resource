@@ -7,29 +7,21 @@ resources:
     type: git
     source: &repo-source
       uri: https://github.com/philwebb/java-cache-resource.git
-      branch: maven-restruct
-  - name: maven-repo-cache
-    type: maven-cache-resource
+  - name: java-cache
+    type: java-cache-resource
     source:
       <<: *repo-source
       depth: 1
+      folders:
+        - source: ~/.javabuild
+          destination: javabuild
       commands:
-        - "./mvnw -Dfast -DskipTests install dependency:go-offline"
-        - "./mvnw -f spring-boot-samples/pom.xml dependency:go-offline"
-      purge:
-        - org.springframework.boot
+        - "echo 'foo' > ~/.javabuild/test"
 jobs:
-  - name: cache
-    plan:
-      - get: git-repo
-        trigger: true
-      - get: maven-repo-cache
   - name: build
     plan:
+      - get: java-cache
       - get: git-repo
         trigger: true
-        passed: [cache]
-      - get: maven-repo-cache
-        passed: [cache]
       - task: run-build
-        file: spring-boot/ci/tasks/run-build.yml
+        file: git-repo/samples/tasks/run-build.yml
