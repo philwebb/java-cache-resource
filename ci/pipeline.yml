@@ -9,4 +9,4 @@ jobs:
       - get: git-repo
         trigger: true
       - task: test
-        file: git-repo/samples/simple/ci/tasks/test.yml
+        file: git-repo/ci/tasks/test.yml
