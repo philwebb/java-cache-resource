@@ -1,4 +1,5 @@
 #!/bin/sh
 set -e
-(cd ./samples/maven && ./mvnw -o clean package)
+cd git-repo/samples/maven
+./mvnw -o clean package
  
