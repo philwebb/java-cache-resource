@@ -28,6 +28,8 @@ For example, a typical Maven project would use `"**pom.xml"` so that only change
 .Typical pipeline
 image::images/pipeline.png[typical pipeline]
 
+Downstream tasks can take the provided cache input and create symlinks to cache directories before running their build.
+
 
 
 ### Why it works
