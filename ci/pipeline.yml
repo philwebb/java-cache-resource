@@ -7,9 +7,14 @@ resources:
     type: docker-image
     source:
       repository: springio/java-cache-resource
+      username: {{java-cache-resource-image-username}}
+      password: {{java-cache-resource-image-password}}
 jobs:
   - name: build
     plan:
       - get: java-cache-resource
         trigger: true
-      - put:
+      - put: java-cache-resource-image
+        params:
+          tag: snapshot
+          
