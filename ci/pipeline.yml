@@ -1,12 +1,12 @@
 resources:
-  - name: git-repo
+  - name: java-cache-resource
     type: git
     source:
       uri: https://github.com/spring-io/java-cache-resource.git
 jobs:
-  - name: test
+  - name: build
     plan:
-      - get: git-repo
+      - get: java-cache-resource
         trigger: true
       - task: test
         file: git-repo/ci/tasks/test.yml
