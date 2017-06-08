@@ -22,7 +22,7 @@ resources:
       cleanup:
         - ".*SNAPSHOT"
 jobs:
-  - name: manve-build
+  - name: maven-build
     plan:
       - get: java-cache
       - get: git-repo
