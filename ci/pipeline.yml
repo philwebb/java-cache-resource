@@ -3,10 +3,13 @@ resources:
     type: git
     source:
       uri: https://github.com/spring-io/java-cache-resource.git
+  - name: java-cache-resource-image
+    type: docker-image
+    source:
+      repository: springio/java-cache-resource
 jobs:
   - name: build
     plan:
       - get: java-cache-resource
         trigger: true
-      - task: test
-        file: git-repo/ci/tasks/test.yml
+      - put:
