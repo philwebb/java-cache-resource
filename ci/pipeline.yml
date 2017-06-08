@@ -45,4 +45,4 @@ jobs:
   - put: java-cache-resource-image
     params:
       tag: java-cache-resource/ci/snapshot-version
-      load: java-cache-resource-image/image
+      load: java-cache-resource-image
