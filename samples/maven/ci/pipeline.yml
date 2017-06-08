@@ -6,7 +6,7 @@ resources:
   - name: git-repo
     type: git
     source: &repo-source
-      uri: https://github.com/philwebb/java-cache-resource.git
+      uri: https://github.com/spring-io/java-cache-resource.git
   - name: java-cache
     type: java-cache-resource
     source:

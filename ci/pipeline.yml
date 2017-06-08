@@ -2,7 +2,7 @@ resources:
   - name: git-repo
     type: git
     source:
-      uri: https://github.com/philwebb/java-cache-resource.git
+      uri: https://github.com/spring-io/java-cache-resource.git
 jobs:
   - name: test
     plan:
