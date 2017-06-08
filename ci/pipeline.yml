@@ -27,6 +27,7 @@ jobs:
     - get: java-cache-resource-image
       params:
         tag: stage
+        save: true
       passed: [build]
   - task: test
     file: java-cache-resource/ci/tasks/test.yml
@@ -39,8 +40,9 @@ jobs:
     - get: java-cache-resource-image
       params:
         tag: snapshot
+        save: true
       passed: [test]
   - put: java-cache-resource-image
     params:
-      build: java-cache-resource
       tag: java-cache-resource/ci/snapshot-version
+      load: java-cache-resource-image/image
