@@ -16,5 +16,4 @@ jobs:
         trigger: true
       - put: java-cache-resource-image
         params:
-          tag: snapshot
-          
+          tag: java-cache-resource/ci/snapshot-version
