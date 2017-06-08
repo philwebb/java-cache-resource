@@ -17,7 +17,7 @@ jobs:
   - put: java-cache-resource-image
     params:
       build: java-cache-resource
-      tag: java-cache-resource/ci/snapshot-version
+      tag: java-cache-resource/ci/stage-version
 - name: test
   plan:
   - aggregate:
@@ -26,7 +26,7 @@ jobs:
       passed: [build]
     - get: java-cache-resource-image
       params:
-        tag: snapshot
+        tag: stage
       passed: [build]
   - task: test
     file: java-cache-resource/ci/tasks/test.yml
@@ -35,8 +35,12 @@ jobs:
   - aggregate:
     - get: java-cache-resource
       trigger: true
-      passed: [build, test]
+      passed: [test]
     - get: java-cache-resource-image
       params:
         tag: snapshot
-      passed: [build, test]
+      passed: [test]
+  - put: java-cache-resource-image
+    params:
+      build: java-cache-resource
+      tag: java-cache-resource/ci/snapshot-version
