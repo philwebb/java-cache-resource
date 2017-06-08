@@ -30,3 +30,13 @@ jobs:
       passed: [build]
   - task: test
     file: java-cache-resource/ci/tasks/test.yml
+- name: promote
+  plan:
+  - aggregate:
+    - get: java-cache-resource
+      trigger: true
+      passed: [build, test]
+    - get: java-cache-resource-image
+      params:
+        tag: snapshot
+      passed: [build, test]
