@@ -1,19 +1,32 @@
 resources:
-  - name: java-cache-resource
-    type: git
-    source:
-      uri: https://github.com/spring-io/java-cache-resource.git
-  - name: java-cache-resource-image
-    type: docker-image
-    source:
-      repository: springio/java-cache-resource
-      username: {{java-cache-resource-image-username}}
-      password: {{java-cache-resource-image-password}}
+- name: java-cache-resource
+  type: git
+  source:
+    uri: https://github.com/spring-io/java-cache-resource.git
+- name: java-cache-resource-image
+  type: docker-image
+  source:
+    repository: springio/java-cache-resource
+    username: {{java-cache-resource-image-username}}
+    password: {{java-cache-resource-image-password}}
 jobs:
-  - name: build
-    plan:
-      - get: java-cache-resource
-        trigger: true
-      - put: java-cache-resource-image
-        params:
-          tag: java-cache-resource/ci/snapshot-version
+- name: build
+  plan:
+  - get: java-cache-resource
+    trigger: true
+  - put: java-cache-resource-image
+    params:
+      build: java-cache-resource
+      tag: java-cache-resource/ci/snapshot-version
+- name: test
+  plan:
+  - aggregate:
+    - get: java-cache-resource
+      trigger: true
+      passed: [build]
+    - get: java-cache-resource-image
+      params:
+        tag: snapshot
+      passed: [build]
+  - task: test
+    file: java-cache-resource/ci/tasks/test.yml
